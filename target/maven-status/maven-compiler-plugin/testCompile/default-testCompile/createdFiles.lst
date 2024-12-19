@@ -1,0 +1,4 @@
+com\library\DatabaseConnectionTest.class
+com\library\BorrowServiceTest.class
+com\library\BookServiceTest.class
+com\library\StudentServiceTest.class

@@ -1,45 +1,81 @@
-package com.library.test;
+package com.library;
 
-import com.library.dao.BookDAO;
 import com.library.model.Book;
 import com.library.service.BookService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.*;
 
-class BookServiceTest {
+public class BookServiceTest {
     private BookService bookService;
-    private BookDAO bookDAO;
 
     @BeforeEach
-    void setUp() {
-        bookDAO = new BookDAO();
-        bookService = new BookService(bookDAO);
+    public void setUp() {
+        bookService = new BookService();
     }
 
     @Test
-    void testAddBook() {
-        Book book = new Book(1, "Java Programming", "John Doe", true);
+    public void testAddBook() {
+        Book book = new Book("Test Title", "Test Author", "Test Publisher", 2023, "1234567890", 2023);
         bookService.addBook(book);
-        assertEquals(1, bookDAO.getAllBooks().size());
-        assertEquals("Java Programming", bookDAO.getBookById(1).get().getTitle());
+
+        // Vérifier que le livre a été ajouté en récupérant le livre par ISBN
+        Optional<Book> retrievedBook = bookService.findBookById(book.getId());
+        assertTrue(retrievedBook.isPresent());
+        assertEquals("Test Title", retrievedBook.get().getTitle());
+        assertEquals("Test Author", retrievedBook.get().getAuthor());
     }
 
     @Test
-    void testUpdateBook() {
-        Book book = new Book(1, "Java Programming", "John Doe", true);
-        bookService.addBook(book);
-        bookService.updateBook(1, "Advanced Java", "Jane Doe", false);
-        assertEquals("Advanced Java", bookDAO.getBookById(1).get().getTitle());
-        assertFalse(bookDAO.getBookById(1).get().isAvailable());
+    public void testDisplayBooks() {
+        // Ajouter des livres
+        Book book1 = new Book("Title1", "Author1", "Publisher1", 2020, "ISBN1", 2020);
+        Book book2 = new Book("Title2", "Author2", "Publisher2", 2021, "ISBN2", 2021);
+        bookService.addBook(book1);
+        bookService.addBook(book2);
+
+        // Afficher les livres
+        bookService.displayBooks();
     }
 
     @Test
-    void testDeleteBook() {
-        Book book = new Book(1, "Java Programming", "John Doe", true);
+    public void testFindBookById() {
+        Book book = new Book("Title", "Author", "Publisher", 2020, "ISBN3", 2020);
         bookService.addBook(book);
-        bookService.deleteBook(1);
-        assertTrue(bookDAO.getBookById(1).isEmpty());
+
+        Optional<Book> retrievedBook = bookService.findBookById(book.getId());
+        assertTrue(retrievedBook.isPresent());
+        assertEquals(book.getTitle(), retrievedBook.get().getTitle());
+    }
+
+    @Test
+    public void testDeleteBook() {
+        Book book = new Book("ToDelete", "Author", "Publisher", 2020, "ISBN4", 2020);
+        bookService.addBook(book);
+
+        // Supprimer le livre
+        bookService.deleteBook(book.getId());
+
+        // Vérifier que le livre a été supprimé
+        Optional<Book> retrievedBook = bookService.findBookById(book.getId());
+        assertFalse(retrievedBook.isPresent());
+    }
+
+    @Test
+    public void testUpdateBook() {
+        Book book = new Book("Old Title", "Author", "Publisher", 2020, "ISBN5", 2020);
+        bookService.addBook(book);
+
+        // Mise à jour des informations du livre
+        book.setTitle("New Title");
+        bookService.updateBook(book);
+
+        // Vérifier que le livre a été mis à jour
+        Optional<Book> retrievedBook = bookService.findBookById(book.getId());
+        assertTrue(retrievedBook.isPresent());
+        assertEquals("New Title", retrievedBook.get().getTitle());
     }
 }

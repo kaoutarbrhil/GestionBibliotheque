@@ -1,11 +1,13 @@
 package com.library.service;
-import com.library.dao.BookDAO; // Importation de BookDAO
-import com.library.model.Book;   // Importation de Book
-import java.util.List;
 
+import com.library.dao.BookDAO;
+import com.library.model.Book;
+
+import java.util.List;
+import java.util.Optional;
 
 public class BookService {
-    private BookDAO bookDAO;  // Utilisation de DAO pour la gestion des livres
+    private BookDAO bookDAO;
 
     // Constructeur qui initialise l'objet BookDAO
     public BookService() {
@@ -26,7 +28,7 @@ public class BookService {
     }
 
     // Trouver un livre par ID
-    public Book findBookById(int id) {
+    public Optional<Book> findBookById(int id) {
         return bookDAO.getBookById(id);
     }
 

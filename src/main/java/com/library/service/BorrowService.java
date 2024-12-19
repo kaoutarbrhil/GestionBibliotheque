@@ -1,9 +1,6 @@
 
 package com.library.service;
 
-import com.library.dao.BookDAO;
-import com.library.dao.StudentDAO;
-import com.library.model.Student;
 import com.library.dao.BorrowDAO;
 import com.library.model.Borrow;
 
@@ -17,10 +14,15 @@ public class BorrowService {
     }
 
     // Méthode pour emprunter un livre
-    public void borrowBook(Borrow borrow) {
-        // Sauvegarde de l'emprunt dans la base de données
-        borrowDAO.save(borrow);
+    public String borrowBook(Borrow borrow) {
+        try {
+            borrowDAO.addBorrow(borrow);
+            return "Livre emprunté avec succès.";
+        } catch (Exception e) {
+            return "Erreur lors de l'emprunt du livre : " + e.getMessage();
+        }
     }
+
 
     // Afficher les emprunts (méthode fictive, à adapter)
     public void displayBorrows() {

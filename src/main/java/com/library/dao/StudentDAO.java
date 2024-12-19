@@ -1,9 +1,11 @@
 package com.library.dao;
 
 import com.library.model.Student;
+import com.library.util.DbConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -11,8 +13,13 @@ public class StudentDAO {
     private final Connection connection;
     private static final Logger LOGGER = Logger.getLogger(StudentDAO.class.getName());
 
-    public StudentDAO(Connection connection) {
-        this.connection = connection;
+    public StudentDAO() {
+        try {
+            this.connection = DbConnection.getConnection();
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Database connection error", e);
+            throw new RuntimeException("Unable to connect to the database", e);
+        }
     }
 
     public void addStudent(Student student) {
@@ -26,22 +33,24 @@ public class StudentDAO {
         }
     }
 
-    public Student getStudentById(int id) {
+    public Optional<Student> getStudentById(int id) {
         String query = "SELECT * FROM students WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(query)) {
             statement.setInt(1, id);
             try (ResultSet resultSet = statement.executeQuery()) {
                 if (resultSet.next()) {
-                    return new Student(resultSet.getInt("id"), resultSet.getString("name"));
+                    return Optional.of(new Student(resultSet.getInt("id"), resultSet.getString("name")));
                 } else {
-                    LOGGER.log(Level.WARNING, "Aucun étudiant trouvé avec l'ID : " + id);
+                    LOGGER.log(Level.WARNING, "No student found with ID: " + id);
+                    return Optional.empty();
                 }
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Erreur lors de la récupération de l'étudiant", e);
+            LOGGER.log(Level.SEVERE, "Error retrieving student by ID", e);
+            return Optional.empty();
         }
-        return null;
     }
+
 
     public List<Student> getAllStudents() {
         List<Student> students = new ArrayList<>();
@@ -77,4 +86,25 @@ public class StudentDAO {
             LOGGER.log(Level.SEVERE, "Erreur lors de la suppression de l'étudiant", e);
         }
     }
+    // Dans StudentDAO
+    public Optional<Student> findById(int id) {
+        String sql = "SELECT * FROM students WHERE id = ?";
+        try (Connection connection = DbConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Student student = new Student(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name")
+                );
+                return Optional.of(student);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+
 }
