@@ -6,22 +6,23 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/kaoutarbrhil/GestionBibliotheque.git'            }
+                git branch: 'main', url: 'https://github.com/kaoutarbrhil/GestionBibliotheque.git'
+            }
         }
         stage('Build') {
             steps {
-                sh '${MAVEN_HOME}/bin/mvn clean compile'
+                bat '"${MAVEN_HOME}\\bin\\mvn" clean compile'
             }
         }
         stage('Test') {
             steps {
-                sh '${MAVEN_HOME}/bin/mvn test'
+                bat '"${MAVEN_HOME}\\bin\\mvn" test'
             }
         }
         stage('Quality Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    sh '${MAVEN_HOME}/bin/mvn sonar:sonar'
+                    bat '"${MAVEN_HOME}\\bin\\mvn" sonar:sonar'
                 }
             }
         }
