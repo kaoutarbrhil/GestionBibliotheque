@@ -11,18 +11,18 @@ pipeline {
         }
         stage('Build') {
             steps {
-                bat "C:\\Program Files\\Apache Software Foundation\\Maven\\apache-maven-3.9.9\\bin\\mvn clean compile"
+                bat "`${MAVEN_HOME}\\bin\\mvn` clean compile"
             }
         }
         stage('Test') {
             steps {
-                bat "C:\\Program Files\\Apache Software Foundation\\Maven\\apache-maven-3.9.9\\bin\\mvn test"
+                bat "`${MAVEN_HOME}\\bin\\mvn` test"
             }
         }
         stage('Quality Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat "C:\\Program Files\\Apache Software Foundation\\Maven\\apache-maven-3.9.9\\bin\\mvn sonar:sonar"
+                    bat "`${MAVEN_HOME}\\bin\\mvn` sonar:sonar"
                 }
             }
         }
