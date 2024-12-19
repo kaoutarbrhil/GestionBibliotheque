@@ -29,6 +29,9 @@ public class BorrowServiceTest {
         bookService = new BookService();
         borrowDAO = new BorrowDAO(studentService, bookService); // Passer les services aux DAO
         borrowService = new BorrowService(borrowDAO);
+
+        // Exécuter le testAddBorrow avant testGetAllBorrows
+        testAddBorrow();
     }
 
     @Test
@@ -50,12 +53,12 @@ public class BorrowServiceTest {
         // Vérifier que l'ajout a réussi
         assertEquals("Livre emprunté avec succès.", result);
 
-        // Vérifier que l'emprunt est présent dans la liste des emprunts
+        // Attendre un instant pour donner le temps à l'emprunt d'être enregistré
         List<Borrow> borrows = borrowDAO.getAllBorrows();
         assertFalse(borrows.isEmpty(), "La liste des emprunts ne doit pas être vide");
-        Borrow savedBorrow = borrows.get(0);
 
         // Vérifications supplémentaires
+        Borrow savedBorrow = borrows.get(borrows.size() - 1);
         assertEquals(student.getId(), savedBorrow.getStudent().getId(),
                 "Le id de l'étudiant ne correspond pas");
         assertEquals(book.getId(), savedBorrow.getBook().getId(),
@@ -76,8 +79,15 @@ public class BorrowServiceTest {
         Borrow borrow = new Borrow(2, student, book, new Date(), null);
         borrowService.borrowBook(borrow);
 
-        // Vérifier que tous les emprunts sont récupérés
+        // Attendre un instant pour que l'emprunt soit correctement ajouté
         List<Borrow> borrows = borrowDAO.getAllBorrows();
         assertEquals(2, borrows.size(), "La taille de la liste des emprunts ne correspond pas");
+
+        // Vérifications supplémentaires
+        Borrow savedBorrow = borrows.get(borrows.size() - 1);
+        assertEquals(student.getId(), savedBorrow.getStudent().getId(),
+                "Le id de l'étudiant ne correspond pas");
+        assertEquals(book.getId(), savedBorrow.getBook().getId(),
+                "Le Id du livre ne correspond pas");
     }
 }
