@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        MAVEN_HOME = tool 'Maven'
+        MAVEN_HOME = "C:\\Program Files\\Apache Software Foundation\\Maven\\apache-maven-3.9.9"
     }
     stages {
         stage('Checkout') {
@@ -11,18 +11,18 @@ pipeline {
         }
         stage('Build') {
             steps {
-                bat '"${MAVEN_HOME}\\bin\\mvn" clean compile'
+                bat "${MAVEN_HOME}\\bin\\mvn clean compile"
             }
         }
         stage('Test') {
             steps {
-                bat '"${MAVEN_HOME}\\bin\\mvn" test'
+                bat "${MAVEN_HOME}\\bin\\mvn test"
             }
         }
         stage('Quality Analysis') {
             steps {
                 withSonarQubeEnv('SonarQube') {
-                    bat '"${MAVEN_HOME}\\bin\\mvn" sonar:sonar'
+                    bat "${MAVEN_HOME}\\bin\\mvn sonar:sonar"
                 }
             }
         }
